@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (mediaQuery.matches) {
                 scroller.style.animationPlayState = 'paused';
             } else {
-                scroller.style.animationPlayState = 'running';
+                scroller.style.animationPlayState = '';
             }
         };
         
