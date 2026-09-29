@@ -104,4 +104,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-    });
+    
+    // --- Interactive Glowing Cursor ---
+    const glowCursor = document.getElementById('glow-cursor');
+    if (glowCursor) {
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let glowX = mouseX;
+        let glowY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        const animateGlow = () => {
+            // Easing for smooth follow effect
+            glowX += (mouseX - glowX) * 0.1;
+            glowY += (mouseY - glowY) * 0.1;
+            
+            // Offset by half the width/height (300px) to center it on the cursor
+            glowCursor.style.transform = `translate(${glowX - 300}px, ${glowY - 300}px)`;
+            requestAnimationFrame(animateGlow);
+        };
+        animateGlow();
+    }
+
+});

@@ -150,3 +150,23 @@ body.dark::before {
     transform: translateY(-4px);
     transition: all 0.3s ease;
 }
+
+/* --- Interactive Glow Cursor --- */
+#glow-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, rgba(173, 5, 230, 0.05) 50%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform;
+    mix-blend-mode: multiply;
+}
+
+body.dark #glow-cursor {
+    background: radial-gradient(circle, rgba(0, 122, 255, 0.25) 0%, rgba(173, 5, 230, 0.1) 50%, transparent 70%);
+    mix-blend-mode: screen;
+}
