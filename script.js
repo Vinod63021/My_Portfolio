@@ -70,24 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Infinite Scroller Accessibility (NEW) ---
-    const scroller = document.querySelector('.scroller-inner');
-    
-    if (scroller) {
-        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-        
-        const handleMotionChange = () => {
-            if (mediaQuery.matches) {
-                scroller.style.animationPlayState = 'paused';
-            } else {
-                scroller.style.animationPlayState = '';
-            }
-        };
-        
-        // Check on load
-        handleMotionChange();
-        
-        // Listen for changes
-        mediaQuery.addEventListener('change', handleMotionChange);
-    }
+    // --- Infinite Scroller Accessibility (REMOVED) ---
+    // The OS reduced-motion check was removed because it disabled the scroll for some users unexpectedly.
 });
