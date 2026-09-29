@@ -103,7 +103,7 @@ body.dark::before {
     gap: 1.5rem; /* 24px */
     width: max-content;
     /* UPDATED: Increased duration to 50s for 5 cards */
-    animation: scroll 50s linear infinite;
+    animation: scroll 50s linear infinite !important;
     will-change: transform;
 }
 
