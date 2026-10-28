@@ -99,7 +99,7 @@
             <a href="#projects" class="px-6 py-3 bg-apple-blue text-white font-semibold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105 animate-pulse-slow">
                 View My Work
             </a>
-            <a href="./resume.pdf" target="_blank" class="px-6 py-3 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 font-semibold rounded-full shadow-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition duration-300 transform hover:scale-105">
+            <a id="resume-download-btn" href="./resume.pdf" target="_blank" class="px-6 py-3 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 font-semibold rounded-full shadow-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition duration-300 transform hover:scale-105">
                 Download Resume
             </a>
         </div>
@@ -1257,6 +1257,204 @@
         requestAnimationFrame(loop);
       }
       requestAnimationFrame(loop);
+    })();
+    </script>
+
+    <!-- +-----------------------------------------------------------+ -->
+    <!-- ¦   RESUME DOWNLOAD CONFETTI CELEBRATION  (Inline Script)  ¦ -->
+    <!-- +-----------------------------------------------------------+ -->
+    <script>
+    (function () {
+      'use strict';
+
+      // -- Antigravity + celebration palette --------------------------
+      var CONFETTI_COLORS = [
+        '#4285F4', // Antigravity Blue
+        '#FF3CAC', // Vivid Magenta
+        '#A142F4', // Electric Violet
+        '#00BCD4', // Neon Cyan
+        '#FBBC04', // Solar Gold
+        '#34A853', // Vibrant Green
+        '#FF6D00', // Deep Orange
+        '#00E5FF', // Electric Aqua
+        '#EA4335', // Flame Red
+        '#69F0AE', // Neon Lime
+        '#FF80AB', // Pastel Pink
+        '#FFD740', // Amber
+        '#FFFFFF', // White paper
+        '#E8F5E9', // Soft mint
+      ];
+
+      // -- Paper shapes: rect strips, squares, tiny circles ----------
+      var SHAPES = ['rect', 'square', 'circle', 'ribbon'];
+
+      // -- Canvas (reuse bubble canvas layer or create dedicated one) --
+      var confettiCanvas = document.createElement('canvas');
+      confettiCanvas.id  = 'confetti-canvas';
+      confettiCanvas.style.cssText = [
+        'position:fixed',
+        'top:0',
+        'left:0',
+        'width:100%',
+        'height:100%',
+        'pointer-events:none',
+        'z-index:99999'
+      ].join(';');
+      document.body.appendChild(confettiCanvas);
+
+      var cctx  = confettiCanvas.getContext('2d');
+      var cw    = 0;
+      var ch    = 0;
+
+      function resizeC() {
+        cw = confettiCanvas.width  = window.innerWidth;
+        ch = confettiCanvas.height = window.innerHeight;
+      }
+      resizeC();
+      window.addEventListener('resize', resizeC);
+
+      // -- Particle class ---------------------------------------------
+      function Piece(originX, originY) {
+        this.color  = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        this.shape  = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+        this.x      = originX;
+        this.y      = originY;
+
+        // Explosive burst velocity – outward in all directions but biased upward
+        var angle   = Math.random() * Math.PI * 2;
+        var speed   = Math.random() * 22 + 8;
+        this.vx     = Math.cos(angle) * speed * 1.2;
+        this.vy     = Math.sin(angle) * speed - 14;  // strong upward bias
+
+        // Physical properties
+        this.gravity   = 0.45;
+        this.drag      = 0.97;
+        this.wobble    = Math.random() * 0.3;
+        this.wobbleSpd = (Math.random() - 0.5) * 0.08;
+        this.rotation  = Math.random() * Math.PI * 2;
+        this.rotSpd    = (Math.random() - 0.5) * 0.2;
+        this.alpha     = 1;
+        this.fadeDelay = Math.random() * 80 + 60;   // frames before fading starts
+        this.frame     = 0;
+
+        // Size
+        this.w = Math.random() * 10 + 6;
+        this.h = this.shape === 'ribbon' ? Math.random() * 4 + 2
+               : this.shape === 'circle' ? this.w
+               : Math.random() * 10 + 4;
+      }
+
+      Piece.prototype.update = function () {
+        this.frame++;
+        this.vx  *= this.drag;
+        this.vy  *= this.drag;
+        this.vy  += this.gravity;
+        this.x   += this.vx;
+        this.y   += this.vy;
+        this.rotation  += this.rotSpd;
+        this.wobble    += this.wobbleSpd;
+
+        if (this.frame > this.fadeDelay) {
+          this.alpha -= 0.014;
+        }
+        return this.alpha > 0.01 && this.y < ch + 60;
+      };
+
+      Piece.prototype.draw = function (ctx) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle   = this.color;
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth   = 1;
+        ctx.translate(this.x + Math.sin(this.wobble) * 5, this.y);
+        ctx.rotate(this.rotation);
+
+        if (this.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, this.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (this.shape === 'ribbon') {
+          ctx.beginPath();
+          ctx.moveTo(-this.w / 2, 0);
+          ctx.bezierCurveTo(-this.w / 4, -this.h, this.w / 4, this.h, this.w / 2, 0);
+          ctx.stroke();
+        } else {
+          // rect or square
+          ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+        }
+        ctx.restore();
+      };
+
+      // -- Active pieces & loop ---------------------------------------
+      var pieces = [];
+      var rafId  = null;
+
+      function confettiLoop() {
+        cctx.clearRect(0, 0, cw, ch);
+        var alive = [];
+        for (var i = 0; i < pieces.length; i++) {
+          if (pieces[i].update()) {
+            pieces[i].draw(cctx);
+            alive.push(pieces[i]);
+          }
+        }
+        pieces = alive;
+        if (pieces.length > 0) {
+          rafId = requestAnimationFrame(confettiLoop);
+        } else {
+          rafId = null;
+          cctx.clearRect(0, 0, cw, ch);
+        }
+      }
+
+      // -- Burst function: spawn N pieces from (x, y) ----------------
+      function burst(x, y, count) {
+        for (var i = 0; i < count; i++) {
+          pieces.push(new Piece(x, y));
+        }
+        if (!rafId) {
+          rafId = requestAnimationFrame(confettiLoop);
+        }
+      }
+
+      // -- Three-wave staggered blast for drama ----------------------
+      function celebrationBlast(btn) {
+        var rect = btn.getBoundingClientRect();
+        var cx   = rect.left + rect.width  / 2;
+        var cy   = rect.top  + rect.height / 2;
+
+        // Wave 1 – immediate big burst
+        burst(cx, cy, 90);
+
+        // Wave 2 – slightly delayed second pop
+        setTimeout(function () { burst(cx, cy, 60); }, 150);
+
+        // Wave 3 – final shower from top edge
+        setTimeout(function () {
+          for (var i = 0; i < 5; i++) {
+            burst(Math.random() * cw, -10, 18);
+          }
+        }, 300);
+      }
+
+      // -- Hook into the resume download button ----------------------
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('resume-download-btn');
+        if (!btn) return;
+
+        btn.addEventListener('click', function () {
+          celebrationBlast(btn);
+        });
+      });
+
+      // Also fire if button already exists (script runs after DOM)
+      var existingBtn = document.getElementById('resume-download-btn');
+      if (existingBtn) {
+        existingBtn.addEventListener('click', function () {
+          celebrationBlast(existingBtn);
+        });
+      }
+
     })();
     </script>
 </body>
