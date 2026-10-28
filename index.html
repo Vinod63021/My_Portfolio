@@ -49,7 +49,6 @@
 </head>
 
 <body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-500 antialiased">
-    <div id="glow-cursor"></div>
 
     <!-- Antigravity Mouse Bubble Canvas -->
     <canvas id="bubble-canvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;"></canvas>
@@ -1177,13 +1176,18 @@
       // Disable on touch / mobile so native scrolling isn't hurt
       if (window.matchMedia('(pointer: coarse)').matches) return;
 
+      // Google Antigravity brand palette
       var COLORS = [
-        '#4285F4', // Google Blue
-        '#EA4335', // Google Red
-        '#FBBC04', // Google Yellow
-        '#34A853', // Google Green
-        '#A142F4', // Pastel Purple
-        '#00BCD4', // Cyan
+        '#4285F4', // Antigravity Blue
+        '#FF3CAC', // Vivid Magenta / Hot Pink
+        '#A142F4', // Electric Violet
+        '#00BCD4', // Neon Cyan
+        '#FBBC04', // Solar Gold
+        '#34A853', // Vibrant Green
+        '#FF6D00', // Deep Orange
+        '#00E5FF', // Electric Aqua
+        '#EA4335', // Flame Red
+        '#69F0AE', // Mint / Neon Lime
       ];
 
       /* ---------- canvas ---------- */
@@ -1218,7 +1222,7 @@
           particles.push({
             x:     e.clientX,
             y:     e.clientY,
-            size:  Math.random() * 4 + 2.5,
+            size:  Math.random() * 5 + 3,
             color: COLORS[Math.floor(Math.random() * COLORS.length)],
             vx:    (Math.random() - 0.5) * 1.2,
             vy:    (Math.random() - 0.5) * 1.2 - 0.5,
@@ -1239,7 +1243,7 @@
           if (p.alpha > 0.01) {
             ctx.save();
             ctx.globalAlpha = p.alpha;
-            ctx.shadowBlur  = 8;
+            ctx.shadowBlur  = 14;
             ctx.shadowColor = p.color;
             ctx.fillStyle   = p.color;
             ctx.beginPath();
