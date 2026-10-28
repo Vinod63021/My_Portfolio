@@ -1168,6 +1168,93 @@
         closeBtn.addEventListener('click', closeModal);
     });
 </script>
+
+    <!-- +------------------------------------------------------+ -->
+    <!-- ¦   ANTIGRAVITY MOUSE BUBBLE EFFECT  (Inline Script)  ¦ -->
+    <!-- +------------------------------------------------------+ -->
+    <script>
+    (function () {
+      // Disable on touch / mobile so native scrolling isn't hurt
+      if (window.matchMedia('(pointer: coarse)').matches) return;
+
+      var COLORS = [
+        '#4285F4', // Google Blue
+        '#EA4335', // Google Red
+        '#FBBC04', // Google Yellow
+        '#34A853', // Google Green
+        '#A142F4', // Pastel Purple
+        '#00BCD4', // Cyan
+      ];
+
+      /* ---------- canvas ---------- */
+      var canvas = document.getElementById('bubble-canvas');
+      if (!canvas) {
+        // Safety: create canvas if somehow missing
+        canvas = document.createElement('canvas');
+        canvas.id = 'bubble-canvas';
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+        document.body.appendChild(canvas);
+      }
+
+      var ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      /* ---------- particles ---------- */
+      var particles   = [];
+      var lastSpawn   = 0;
+      var SPAWN_MS    = 40;
+      var MAX_BUBBLES = 25;
+
+      window.addEventListener('mousemove', function (e) {
+        var now = performance.now();
+        if (now - lastSpawn > SPAWN_MS && particles.length < MAX_BUBBLES) {
+          lastSpawn = now;
+          particles.push({
+            x:     e.clientX,
+            y:     e.clientY,
+            size:  Math.random() * 4 + 2.5,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            vx:    (Math.random() - 0.5) * 1.2,
+            vy:    (Math.random() - 0.5) * 1.2 - 0.5,
+            alpha: 0.85,
+          });
+        }
+      });
+
+      /* ---------- render loop ---------- */
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var alive = [];
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.x    += p.vx;
+          p.y    += p.vy;
+          p.alpha -= 0.022;
+          if (p.alpha > 0.01) {
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.shadowBlur  = 8;
+            ctx.shadowColor = p.color;
+            ctx.fillStyle   = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            alive.push(p);
+          }
+        }
+        particles = alive;
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    })();
+    </script>
 </body>
 
 </html>
